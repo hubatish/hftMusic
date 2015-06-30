@@ -4,10 +4,10 @@ using System.Collections;
 
 public class BirdScript : MonoBehaviour {
 
-    public float maxSpeed = 10;
-    public Transform groundCheck;
-    public LayerMask whatIsGround;
-    public float jumpForce = 700f;
+    public Transform left;
+    public Transform right;
+    public Transform up;
+
     public Transform nameTransform;
 
     // this is the base color of the avatar.
@@ -16,14 +16,6 @@ public class BirdScript : MonoBehaviour {
     public Color baseColor;
 
     private float m_direction = 0.0f;
-    private bool m_jumpPressed = false;      // true if currently held down
-    private bool m_jumpJustPressed = false;  // true if pressed just now
-    private float m_groundRadius = 0.2f;
-    private bool m_grounded = false;
-    private bool m_facingRight = true;
-    private Animator m_animator;
-    private Rigidbody2D m_rigidbody2d;
-    private Material m_material;
     private GUIStyle m_guiStyle = new GUIStyle();
     private GUIContent m_guiName = new GUIContent("");
     private Rect m_nameRect = new Rect(0,0,0,0);
@@ -70,11 +62,6 @@ public class BirdScript : MonoBehaviour {
     }
 
     void Init() {
-        if (m_animator == null) {
-            m_animator = GetComponent<Animator>();
-            m_rigidbody2d = GetComponent<Rigidbody2D>();
-            m_material = GetComponent<Renderer>().material;
-        }
     }
 
     // Use this for initialization
@@ -107,8 +94,8 @@ public class BirdScript : MonoBehaviour {
             hue,
             sat,
             0.0f,
-            m_material.GetFloat("_HSVRangeMin"),
-            m_material.GetFloat("_HSVRangeMax"));
+            hue * 0.5f,            //m_material.GetFloat("_HSVRangeMin"),
+            1f);            ///m_material.GetFloat("_HSVRangeMax"));
         SetColor(color);
 
         // Send it to the phone
@@ -117,14 +104,6 @@ public class BirdScript : MonoBehaviour {
 
     void Update()
     {
-        // If we're on the ground AND we pressed jump (or space)
-        if (m_grounded && (m_jumpJustPressed || Input.GetKeyDown("space")))
-        {
-            m_grounded = false;
-            m_animator.SetBool("Ground", m_grounded);
-            m_rigidbody2d.AddForce(new Vector2(0, jumpForce));
-        }
-        m_jumpJustPressed = false;
     }
 
     void MoveToRandomSpawnPoint()
@@ -155,9 +134,9 @@ public class BirdScript : MonoBehaviour {
         tex.SetPixels(pix);
         tex.Apply();
         m_guiStyle.normal.background = tex;
-        m_material.SetVector("_HSVAAdjust", new Vector4(color.h, color.s, color.v, 0.0f));
-        m_material.SetFloat("_HSVRangeMin", color.rangeMin);
-        m_material.SetFloat("_HSVRangeMax", color.rangeMax);
+        //m_material.SetVector("_HSVAAdjust", new Vector4(color.h, color.s, color.v, 0.0f));
+        //m_material.SetFloat("_HSVRangeMin", color.rangeMin);
+        //m_material.SetFloat("_HSVRangeMax", color.rangeMax);
     }
 
     void Remove(object sender, System.EventArgs e)
@@ -167,39 +146,6 @@ public class BirdScript : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate () {
-        // Check if the center under us is touching the ground and
-        // pass that info to the Animator
-        m_grounded = Physics2D.OverlapCircle(groundCheck.position, m_groundRadius, whatIsGround);
-        m_animator.SetBool("Ground", m_grounded);
-
-        // Pass our vertical speed to the animator
-        m_animator.SetFloat("vSpeed", m_rigidbody2d.velocity.y);
-
-        // Get left/right input (get both phone and local input)
-        float move = m_direction + Input.GetAxis("Horizontal");
-
-        // Pass that to the animator
-        m_animator.SetFloat("Speed", Mathf.Abs(move));
-
-        // and move us
-        m_rigidbody2d.velocity = new Vector2(move * maxSpeed, m_rigidbody2d.velocity.y);
-        if (move > 0 && !m_facingRight) {
-            Flip();
-        } else if (move < 0 && m_facingRight) {
-            Flip();
-        }
-
-        if (transform.position.y < LevelSettings.settings.bottomOfLevel.position.y) {
-            MoveToRandomSpawnPoint();
-        }
-    }
-
-    void Flip()
-    {
-        m_facingRight = !m_facingRight;
-        Vector3 theScale = transform.localScale;
-        theScale.x *= -1;
-        transform.localScale = theScale;
     }
 
     void OnGUI()
@@ -221,11 +167,33 @@ public class BirdScript : MonoBehaviour {
     void OnMove(MessageMove data)
     {
         m_direction = data.dir;
+        //Debug.Log("OnMove: " + data.dir);
+        if (data.dir == -1)
+        {
+            SpawnPrefab(left);
+        }
+        if (data.dir == 1)
+        {
+            SpawnPrefab(right);
+        }
     }
 
     void OnJump(MessageJump data)
     {
-        m_jumpJustPressed = data.jump && !m_jumpPressed;
-        m_jumpPressed = data.jump;
+        //m_jumpJustPressed = data.jump && !m_jumpPressed;
+        //m_jumpPressed = data.jump;
+        //Debug.Log("OnJump: " + data.jump);
+        if (data.jump)
+        {
+            SpawnPrefab(up);
+        }
+    }
+
+    public float destroyTime = 1.5f;
+
+    void SpawnPrefab(Transform prefab)
+    {
+        GameObject g = ((Transform) GameObject.Instantiate(prefab, transform.position, Quaternion.identity)).gameObject;
+        GameObject.Destroy(g, destroyTime);
     }
 }
