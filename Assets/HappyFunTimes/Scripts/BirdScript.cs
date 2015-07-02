@@ -102,10 +102,6 @@ public class BirdScript : MonoBehaviour {
         m_netPlayer.SendCmd("setColor", color);
     }
 
-    void Update()
-    {
-    }
-
     void MoveToRandomSpawnPoint()
     {
         // Pick a random spawn point
