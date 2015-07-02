@@ -401,6 +401,10 @@
     <Compile Include="HappyFunTimes\Scripts\ColorUtils.cs" />
     <Compile Include="HappyFunTimes\Scripts\LevelSettings.cs" />
     <Compile Include="Plugins\HFTRunner.cs" />
+    <Compile Include="Scripts\Element.cs" />
+    <Compile Include="Scripts\ElementManager.cs" />
+    <Compile Include="Scripts\PatternListener.cs" />
+    <Compile Include="Scripts\PatternCoordinator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
