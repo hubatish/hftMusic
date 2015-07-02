@@ -12,7 +12,7 @@ public class PatternCoordinator : MonoBehaviour
     public static PatternCoordinator Instance;
 
     protected ElementManager elementManager;
-    protected void Start()
+    protected void Awake()
     {
         elementManager = gameObject.GetComponent<ElementManager>();
         GeneratePattern(defaultNumElements);
@@ -74,5 +74,22 @@ public class PatternCoordinator : MonoBehaviour
             ClearPattern();
             GeneratePattern(defaultNumElements);
         }
+    }
+
+    /// <summary>
+    /// An element has been created
+    /// Check if it matches the next element in pattern
+    /// If so, advance position
+    /// </summary>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    public bool AttemptElementPress(Element e)
+    {
+        if(e.isSame(spawnedElements[currentPosition]))
+        {
+            AdvancePosition();
+            return true; 
+        }
+        return false;
     }
 }

@@ -4,9 +4,7 @@ using System.Collections;
 
 public class BirdScript : MonoBehaviour {
 
-    public Transform left;
-    public Transform right;
-    public Transform up;
+    public PatternPlayer playerListener;
 
     public Transform nameTransform;
 
@@ -25,13 +23,13 @@ public class BirdScript : MonoBehaviour {
     private NetPlayer m_netPlayer;
 
     // Message when player presses or release jump button
-    private class MessageJump : MessageCmdData
+    public class MessageJump : MessageCmdData
     {
         public bool jump = false;
     }
 
     // Message when player pressed left or right
-    private class MessageMove : MessageCmdData
+    public class MessageMove : MessageCmdData
     {
         public int dir = 0;  // will be -1, 0, or +1
     }
@@ -162,34 +160,11 @@ public class BirdScript : MonoBehaviour {
 
     void OnMove(MessageMove data)
     {
-        m_direction = data.dir;
-        //Debug.Log("OnMove: " + data.dir);
-        if (data.dir == -1)
-        {
-            SpawnPrefab(left);
-        }
-        if (data.dir == 1)
-        {
-            SpawnPrefab(right);
-        }
+        playerListener.OnMove(data);
     }
 
     void OnJump(MessageJump data)
     {
-        //m_jumpJustPressed = data.jump && !m_jumpPressed;
-        //m_jumpPressed = data.jump;
-        //Debug.Log("OnJump: " + data.jump);
-        if (data.jump)
-        {
-            SpawnPrefab(up);
-        }
-    }
-
-    public float destroyTime = 1.5f;
-
-    void SpawnPrefab(Transform prefab)
-    {
-        GameObject g = ((Transform) GameObject.Instantiate(prefab, transform.position, Quaternion.identity)).gameObject;
-        GameObject.Destroy(g, destroyTime);
+        playerListener.OnJump(data);
     }
 }

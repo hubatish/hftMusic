@@ -405,6 +405,7 @@
     <Compile Include="Scripts\ElementManager.cs" />
     <Compile Include="Scripts\PatternListener.cs" />
     <Compile Include="Scripts\PatternCoordinator.cs" />
+    <Compile Include="Scripts\PatternPlayer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

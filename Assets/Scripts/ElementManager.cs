@@ -7,6 +7,13 @@ using System.Collections.Generic;
 /// </summary>
 public class ElementManager : MonoBehaviour
 {
+    public static ElementManager Instance;
+
+    protected void Awake()
+    {
+        Instance = this;
+    }
+
     public List<Element> elementPrefabs = new List<Element>();
 
     public Element GetElement(int elementNum)
