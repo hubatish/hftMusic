@@ -23,4 +23,27 @@ public class Element : MonoBehaviour {
     {
         return other.elementNumber == elementNumber;
     }
+
+    protected SpriteRenderer renderer
+    {
+        get
+        {
+            if (_renderer == null)
+            {
+                _renderer = gameObject.GetComponent<SpriteRenderer>();
+            }
+            return _renderer;
+        }
+    }
+    private SpriteRenderer _renderer;
+
+    public void SetTransparent()
+    {
+        renderer.color = new Color(renderer.color.a, renderer.color.g, renderer.color.b, 0.4f);
+    }
+
+    public void SetVisible()
+    {
+        renderer.color = new Color(renderer.color.a, renderer.color.g, renderer.color.b, 1f);
+    }
 }

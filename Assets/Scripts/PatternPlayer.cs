@@ -50,8 +50,7 @@ public class PatternPlayer : MonoBehaviour {
     Element SpawnRandomElement(Vector3 direction)
     {
         Element e = ((Element)GameObject.Instantiate(ElementManager.Instance.GetRandomElement(), transform.position + direction * distBetweenElements, Quaternion.identity));
-        SpriteRenderer renderer = e.GetComponent<SpriteRenderer>();
-        renderer.color = new Color(renderer.color.r,renderer.color.g,renderer.color.b,0.4f);
+        e.SetTransparent();
         return e;
     }
 
@@ -60,8 +59,7 @@ public class PatternPlayer : MonoBehaviour {
         //Uh.. show the element and that
         Element e = ((Element)GameObject.Instantiate(prefab, transform.position+direction*distBetweenElements, Quaternion.identity));
         GameObject.Destroy(e.gameObject, destroyTime);
-        SpriteRenderer renderer = e.GetComponent<SpriteRenderer>();
-        renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 1f);
+        e.SetVisible();
 
         //Actually play the game
         PatternCoordinator.Instance.AttemptElementPress(e);

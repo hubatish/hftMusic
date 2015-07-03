@@ -30,6 +30,7 @@ public class PatternCoordinator : MonoBehaviour
             Element newElement = (Element) GameObject.Instantiate(elementManager.GetRandomElement(), 
                                                                             GetVector3FromPosition(i),
                                                                                 Quaternion.identity);
+            newElement.SetTransparent();
             spawnedElements.Add(newElement);
         }
         currentPosition = 0;
@@ -59,9 +60,14 @@ public class PatternCoordinator : MonoBehaviour
         {
             _currentPosition = value;
             indicator.position = GetVector3FromPosition(value) + Vector3.left*distBetweenElements;
+            spawnedElements[prevPosition].SetTransparent();
+            spawnedElements[_currentPosition].SetVisible();
+            prevPosition = _currentPosition;
         }
     }
     private int _currentPosition;
+
+    private int prevPosition = 0;
 
     public Transform indicator;
 
@@ -74,6 +80,11 @@ public class PatternCoordinator : MonoBehaviour
             ClearPattern();
             GeneratePattern(defaultNumElements);
         }
+    }
+
+    public void ResetPosition()
+    {
+        currentPosition = 0;
     }
 
     /// <summary>
