@@ -15,7 +15,6 @@ public class PatternCoordinator : MonoBehaviour
     protected void Awake()
     {
         elementManager = gameObject.GetComponent<ElementManager>();
-        GeneratePattern(defaultNumElements);
         Instance = this;
     }
 
@@ -33,7 +32,7 @@ public class PatternCoordinator : MonoBehaviour
             newElement.SetTransparent();
             spawnedElements.Add(newElement);
         }
-        currentPosition = 0;
+        SetCurrentPosition(0);
     }
 
     public void ClearPattern()
@@ -41,7 +40,14 @@ public class PatternCoordinator : MonoBehaviour
         for(int i = spawnedElements.Count - 1; i >= 0; i--)
         {
             GameObject.Destroy(spawnedElements[i].gameObject);
+            spawnedElements.RemoveAt(i);
         }
+    }
+
+    public void ResetPattern()
+    {
+        ClearPattern();
+        GeneratePattern(defaultNumElements);
     }
 
     protected Vector3 GetVector3FromPosition(int elementNum)
@@ -59,32 +65,39 @@ public class PatternCoordinator : MonoBehaviour
         set
         {
             _currentPosition = value;
-            indicator.position = GetVector3FromPosition(value) + Vector3.left*distBetweenElements;
-            spawnedElements[prevPosition].SetTransparent();
-            spawnedElements[_currentPosition].SetVisible();
-            prevPosition = _currentPosition;
         }
     }
     private int _currentPosition;
-
     private int prevPosition = 0;
+
+    private void SetCurrentPosition(int value)
+    {
+        currentPosition = value;
+        indicator.position = GetVector3FromPosition(value) + Vector3.left * distBetweenElements;
+        spawnedElements[_currentPosition].SetVisible();
+        if (prevPosition > spawnedElements.Count - 1)
+        {
+            prevPosition = 0;
+        }
+        spawnedElements[prevPosition].SetTransparent();
+        prevPosition = _currentPosition;
+    }
 
     public Transform indicator;
 
     public void AdvancePosition()
     {
-        currentPosition += 1;
-        if (currentPosition > spawnedElements.Count-1)
+        int position = currentPosition+1;
+        if (position > spawnedElements.Count-1)
         {
             //won the pattern!
-            ClearPattern();
-            GeneratePattern(defaultNumElements);
+            Debug.Log("won the pattern!");
+            ResetPattern();
         }
-    }
-
-    public void ResetPosition()
-    {
-        currentPosition = 0;
+        else
+        {
+            SetCurrentPosition(position);
+        }
     }
 
     /// <summary>

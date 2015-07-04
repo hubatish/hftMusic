@@ -4,7 +4,6 @@ using System.Collections;
 public class PatternPlayer : MonoBehaviour {
     protected Element left;
     protected Element right;
-    protected Element up;
 
     private float m_direction = 0.0f;
 
@@ -13,10 +12,14 @@ public class PatternPlayer : MonoBehaviour {
     //Order of events with singleton start shouldn't matter cause this doesn't actually start scene in game
     protected void Start()
     {
+        playerListener = PlayerListener.Instance;
+        playerListener.PlayerJoin();
+
         left = SpawnRandomElement(Vector3.left);
         right = SpawnRandomElement(Vector3.right);
-        up = SpawnRandomElement(Vector3.up);
     }
+
+    private PlayerListener playerListener;
 
     public void OnMove(BirdScript.MessageMove data)
     {
@@ -36,7 +39,7 @@ public class PatternPlayer : MonoBehaviour {
     {
         if (data.jump)
         {
-            SpawnElementInDirection(up,Vector3.up);
+            //SpawnElementInDirection(up,Vector3.up);
         }
     }
 
@@ -49,7 +52,7 @@ public class PatternPlayer : MonoBehaviour {
     /// <returns></returns>
     Element SpawnRandomElement(Vector3 direction)
     {
-        Element e = ((Element)GameObject.Instantiate(ElementManager.Instance.GetRandomElement(), transform.position + direction * distBetweenElements, Quaternion.identity));
+        Element e = ((Element)GameObject.Instantiate(ElementManager.Instance.GetUnusedElement(), transform.position + direction * distBetweenElements, Quaternion.identity));
         e.SetTransparent();
         return e;
     }
@@ -66,8 +69,18 @@ public class PatternPlayer : MonoBehaviour {
         return e;
     }
 
+    protected bool appIsQuitting = false;
+    protected void OnApplicationQuit()
+    {
+        appIsQuitting = true;
+    }
+
     protected void OnDestroy()
     {
+        if (appIsQuitting)
+        {
+            return;
+        }
         if (left != null)
         {
             GameObject.Destroy(left.gameObject);
@@ -76,10 +89,7 @@ public class PatternPlayer : MonoBehaviour {
         {
             GameObject.Destroy(right.gameObject);
         }
-        if (up != null)
-        {
-            GameObject.Destroy(up.gameObject);
-        }
+        playerListener.PlayerLeave();
     }
 
 }
