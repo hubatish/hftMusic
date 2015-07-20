@@ -13,7 +13,7 @@ public class PatternListener : MonoBehaviour
 
     protected PatternCoordinator patternCoordinator;
 
-    protected void Start()
+    protected void Awake()
     {
         patternCoordinator = gameObject.GetComponent<PatternCoordinator>();
         distBetweenElements = patternCoordinator.distBetweenElements;

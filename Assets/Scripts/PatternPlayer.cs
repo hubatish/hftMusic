@@ -66,6 +66,7 @@ public class PatternPlayer : MonoBehaviour {
 
         //Actually play the game
         PatternCoordinator.Instance.AttemptElementPress(e);
+        CloseBeatsChecker.Instance.PlayerPressed();
         return e;
     }
 

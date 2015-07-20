@@ -59,20 +59,9 @@ public class BirdScript : MonoBehaviour {
         public float rangeMax;
     }
 
-    void Init() {
-    }
-
-    // Use this for initialization
-    void Start ()
-    {
-        Init();
-    }
-
     // Called when player connects with their phone
     void InitializeNetPlayer(SpawnInfo spawnInfo)
     {
-        Init();
-
         m_netPlayer = spawnInfo.netPlayer;
         m_netPlayer.OnDisconnect += Remove;
         m_netPlayer.OnNameChange += ChangeName;
@@ -103,8 +92,8 @@ public class BirdScript : MonoBehaviour {
     void MoveToRandomSpawnPoint()
     {
         // Pick a random spawn point
-        int ndx = Random.Range(0, LevelSettings.settings.spawnPoints.Length - 1);
-        transform.localPosition = LevelSettings.settings.spawnPoints[ndx].localPosition;
+        //int ndx = Random.Range(0, LevelSettings.settings.spawnPoints.Length - 1);
+        transform.localPosition = LevelSettings.settings.GetNextSpawnPoint().localPosition;//LevelSettings.settings.spawnPoints[ndx].localPosition;
     }
 
     void SetName(string name)

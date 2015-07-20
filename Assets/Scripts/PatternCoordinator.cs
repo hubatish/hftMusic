@@ -93,6 +93,7 @@ public class PatternCoordinator : MonoBehaviour
             //won the pattern!
             Debug.Log("won the pattern!");
             ResetPattern();
+            CallWinActions();
         }
         else
         {
@@ -114,6 +115,52 @@ public class PatternCoordinator : MonoBehaviour
             AdvancePosition();
             return true; 
         }
+        else
+        {
+            //failure, restart progress in pattern
+            FailPattern();
+        }
         return false;
+    }
+
+    public void FailPattern()
+    {
+        SetCurrentPosition(0);
+        CallLoseActions();
+    }
+
+    protected List<Action> winActions = new List<Action>();
+    protected List<Action> loseActions = new List<Action>();
+
+    protected void CallWinActions()
+    {
+        foreach (var action in winActions)
+        {
+            action();
+        }
+    }
+
+    protected void CallLoseActions()
+    {
+        foreach(var action in loseActions)
+        {
+            action();
+        }
+    }
+
+    public void AddPatternEndAction(Action action)
+    {
+        winActions.Add(action);
+        loseActions.Add(action);
+    }
+
+    public void AddPatternLoseAction(Action action)
+    {
+        loseActions.Add(action);
+    }
+
+    public void AddPatternWinAction(Action action)
+    {
+        winActions.Add(action);
     }
 }

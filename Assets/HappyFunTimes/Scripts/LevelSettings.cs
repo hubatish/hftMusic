@@ -8,7 +8,15 @@ public class LevelSettings : MonoBehaviour
     public Transform bottomOfLevel;
     public Transform[] spawnPoints;
 
-    static private LevelSettings s_settings;
+    //ZH Getting them spawn points 7-19
+    public Transform GetNextSpawnPoint()
+    {
+        //woohoo, beware order of operations here
+        return spawnPoints[PlayerListener.Instance.numPlayers];
+    }
+
+
+static private LevelSettings s_settings;
 
     public static LevelSettings settings
     {

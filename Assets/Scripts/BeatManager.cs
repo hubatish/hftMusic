@@ -10,7 +10,7 @@ public class BeatManager : MonoBehaviour {
         get
         {
             //Round up/down for current beat
-            if (timeThisBeat<timePerBeat / 2f)
+            if (true)//(timeThisBeat<timePerBeat / 2f)
             {
                 return _currentBeat;
             }
@@ -29,11 +29,19 @@ public class BeatManager : MonoBehaviour {
 
     protected float timeThisBeat = 0f;
 
-    public float timePerBeat = 1f;
+    [SerializeField]
+    protected float startTimePerBeat = 1.0f;
+
+    private float timePerBeat;
+
+    public AudioClip beatSound;
+    public AudioSource audioPlayer;
 
 	// Use this for initialization
 	void Start () {
-	
+        ResetBeats();
+        PatternCoordinator.Instance.AddPatternEndAction(ResetBeats);
+        audioPlayer = gameObject.GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -42,19 +50,46 @@ public class BeatManager : MonoBehaviour {
         if (timeThisBeat>timePerBeat)
         {
             timeThisBeat = 0f;
-            timePerBeat *= 0.96f;
+            //timePerBeat *= 0.96f;
             currentBeat += 1;
+            AdvanceABeat();
         }
 	}
 
+    //Onto the next beat, do things!
+    protected void AdvanceABeat()
+    {
+        for(int i = onBeatActions.Count - 1; i>=0;i--)
+        {
+            if(currentBeat >= onBeatActions[i].beat)
+            {
+                onBeatActions[i].action();
+                //remove the action
+                if(!onBeatActions[i].repeat)
+                {
+                    onBeatActions.RemoveAt(i);
+                }
+            }
+        }
+        audioPlayer.PlayOneShot(beatSound);
+    }
+
+    public void ResetBeats()
+    {
+        timePerBeat = startTimePerBeat;
+        timeThisBeat = 0;
+    }
+
     public class OnBeatAction
     {
-        Action action;
-        int beat;
-        public OnBeatAction(Action action, int beat)
+        public Action action;
+        public int beat;
+        public bool repeat;
+        public OnBeatAction(Action action, int beat, bool repeat = true)
         {
             this.action = action;
             this.beat = beat;
+            this.repeat = repeat;
         }
     }
 

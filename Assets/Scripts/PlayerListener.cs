@@ -17,6 +17,7 @@ public class PlayerListener : Singleton<PlayerListener> {
     //Woah, a player actually joined!
     public void PlayerJoin()
     {
+        //woohoo, beware order of operations here
         numPlayers += 1;
         CallPlayerJoinActions();
     }
