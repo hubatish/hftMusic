@@ -403,12 +403,14 @@
     <Compile Include="HappyFunTimes\Scripts\Singleton.cs" />
     <Compile Include="Plugins\HFTRunner.cs" />
     <Compile Include="Scripts\BeatManager.cs" />
+    <Compile Include="Scripts\CloseBeatsChecker.cs" />
     <Compile Include="Scripts\Element.cs" />
     <Compile Include="Scripts\ElementManager.cs" />
     <Compile Include="Scripts\PatternListener.cs" />
     <Compile Include="Scripts\PatternCoordinator.cs" />
     <Compile Include="Scripts\PatternPlayer.cs" />
     <Compile Include="Scripts\PlayerListener.cs" />
+    <Compile Include="Scripts\ScoreManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
