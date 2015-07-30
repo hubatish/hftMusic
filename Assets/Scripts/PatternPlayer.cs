@@ -19,6 +19,13 @@ public class PatternPlayer : MonoBehaviour {
         right = SpawnRandomElement(Vector3.right);
     }
 
+    [SerializeField]
+    private CountdownDial leftDial;
+    [SerializeField]
+    private CountdownDial rightDial;
+
+    public float tickTime = 1f;
+
     private PlayerListener playerListener;
 
     public void OnMove(BirdScript.MessageMove data)
@@ -28,10 +35,12 @@ public class PatternPlayer : MonoBehaviour {
         if (data.dir == -1)
         {
             SpawnElementInDirection(left,Vector3.left);
+            leftDial.StartTicking(tickTime);
         }
         if (data.dir == 1)
         {
             SpawnElementInDirection(right,Vector3.right);
+            rightDial.StartTicking(tickTime);
         }
     }
 
@@ -57,6 +66,12 @@ public class PatternPlayer : MonoBehaviour {
         return e;
     }
 
+    /// <summary>
+    /// Instatiate left or right element (from presses by the player)
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="direction"></param>
+    /// <returns></returns>
     Element SpawnElementInDirection(Element prefab,Vector3 direction)
     {
         //Uh.. show the element and that

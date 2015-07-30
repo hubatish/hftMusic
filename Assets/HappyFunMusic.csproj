@@ -404,6 +404,7 @@
     <Compile Include="Plugins\HFTRunner.cs" />
     <Compile Include="Scripts\BeatManager.cs" />
     <Compile Include="Scripts\CloseBeatsChecker.cs" />
+    <Compile Include="Scripts\CountdownDial.cs" />
     <Compile Include="Scripts\Element.cs" />
     <Compile Include="Scripts\ElementManager.cs" />
     <Compile Include="Scripts\PatternListener.cs" />
