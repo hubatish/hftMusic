@@ -4,10 +4,6 @@ using System.Collections;
 
 public class BirdScript : MonoBehaviour {
 
-    public Transform left;
-    public Transform right;
-    public Transform up;
-
     public Transform nameTransform;
 
     // this is the base color of the avatar.
@@ -15,7 +11,7 @@ public class BirdScript : MonoBehaviour {
     // the avatar will become after its hsv has been adjusted.
     public Color baseColor;
 
-    private float m_direction = 0.0f;
+    private Material m_material;
     private GUIStyle m_guiStyle = new GUIStyle();
     private GUIContent m_guiName = new GUIContent("");
     private Rect m_nameRect = new Rect(0,0,0,0);
@@ -23,18 +19,6 @@ public class BirdScript : MonoBehaviour {
 
     // Manages the connection between this object and the phone.
     private NetPlayer m_netPlayer;
-
-    // Message when player presses or release jump button
-    private class MessageJump : MessageCmdData
-    {
-        public bool jump = false;
-    }
-
-    // Message when player pressed left or right
-    private class MessageMove : MessageCmdData
-    {
-        public int dir = 0;  // will be -1, 0, or +1
-    }
 
     // Message to send to phone to tell it the color of the avatar
     // Note that it sends an hue, saturation, value **adjustment**
@@ -62,7 +46,11 @@ public class BirdScript : MonoBehaviour {
     }
 
     void Init() {
+        messageReceiver.Init();
+        m_material = GetComponent<Renderer>().material;
     }
+
+    public MessageActor messageReceiver;
 
     // Use this for initialization
     void Start ()
@@ -83,8 +71,6 @@ public class BirdScript : MonoBehaviour {
         m_netPlayer.RegisterCmdHandler<MessageMove>("move", OnMove);
         m_netPlayer.RegisterCmdHandler<MessageJump>("jump", OnJump);
 
-        MoveToRandomSpawnPoint();
-
         SetName(m_netPlayer.Name);
 
         // Pick a random amount to adjust the hue and saturation
@@ -94,23 +80,12 @@ public class BirdScript : MonoBehaviour {
             hue,
             sat,
             0.0f,
-            hue * 0.5f,            //m_material.GetFloat("_HSVRangeMin"),
-            1f);            ///m_material.GetFloat("_HSVRangeMax"));
+            m_material.GetFloat("_HSVRangeMin"),
+            m_material.GetFloat("_HSVRangeMax"));
         SetColor(color);
 
         // Send it to the phone
         m_netPlayer.SendCmd("setColor", color);
-    }
-
-    void Update()
-    {
-    }
-
-    void MoveToRandomSpawnPoint()
-    {
-        // Pick a random spawn point
-        int ndx = Random.Range(0, LevelSettings.settings.spawnPoints.Length - 1);
-        transform.localPosition = LevelSettings.settings.spawnPoints[ndx].localPosition;
     }
 
     void SetName(string name)
@@ -134,18 +109,14 @@ public class BirdScript : MonoBehaviour {
         tex.SetPixels(pix);
         tex.Apply();
         m_guiStyle.normal.background = tex;
-        //m_material.SetVector("_HSVAAdjust", new Vector4(color.h, color.s, color.v, 0.0f));
-        //m_material.SetFloat("_HSVRangeMin", color.rangeMin);
-        //m_material.SetFloat("_HSVRangeMax", color.rangeMax);
+        m_material.SetVector("_HSVAAdjust", new Vector4(color.h, color.s, color.v, 0.0f));
+        m_material.SetFloat("_HSVRangeMin", color.rangeMin);
+        m_material.SetFloat("_HSVRangeMax", color.rangeMax);
     }
 
     void Remove(object sender, System.EventArgs e)
     {
         Destroy(gameObject);
-    }
-
-    // Update is called once per frame
-    void FixedUpdate () {
     }
 
     void OnGUI()
@@ -166,34 +137,11 @@ public class BirdScript : MonoBehaviour {
 
     void OnMove(MessageMove data)
     {
-        m_direction = data.dir;
-        //Debug.Log("OnMove: " + data.dir);
-        if (data.dir == -1)
-        {
-            SpawnPrefab(left);
-        }
-        if (data.dir == 1)
-        {
-            SpawnPrefab(right);
-        }
+        messageReceiver.OnMove(data);
     }
 
     void OnJump(MessageJump data)
     {
-        //m_jumpJustPressed = data.jump && !m_jumpPressed;
-        //m_jumpPressed = data.jump;
-        //Debug.Log("OnJump: " + data.jump);
-        if (data.jump)
-        {
-            SpawnPrefab(up);
-        }
-    }
-
-    public float destroyTime = 1.5f;
-
-    void SpawnPrefab(Transform prefab)
-    {
-        GameObject g = ((Transform) GameObject.Instantiate(prefab, transform.position, Quaternion.identity)).gameObject;
-        GameObject.Destroy(g, destroyTime);
+        messageReceiver.OnJump(data);
     }
 }
